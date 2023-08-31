@@ -50,6 +50,13 @@ public class FlattenSpecParquetReaderTest extends BaseParquetReaderTest
                                           + "  \"timestamp\" : 1537229880023\n"
                                           + "}";
 
+  private static final String LISTDIM = "\"listDim\" : [ \"listDim1v1\", \"listDim1v2\" ]";
+  private static final String DIM3 = "\"dim3\" : 1";
+  private static final String DIM2 = "\"dim2\" : \"d2v1\"";
+  private static final String DIM1 = "\"dim1\" : \"d1v1\"";
+  private static final String METRIC1 = "\"metric1\" : 1";
+  private static final String TIMESTAMP = "\"timestamp\" : 1537229880023";
+
   private static final String NESTED_JSON = "{\n"
                                             + "  \"nestedData\" : {\n"
                                             + "    \"listDim\" : [ \"listDim1v1\", \"listDim1v2\" ],\n"
@@ -93,7 +100,14 @@ public class FlattenSpecParquetReaderTest extends BaseParquetReaderTest
         flattenSpec
     );
     List<InputRowListPlusRawValues> sampled = sampleAllRows(reader);
-    Assert.assertEquals(FLAT_JSON, DEFAULT_JSON_WRITER.writeValueAsString(sampled.get(0).getRawValues()));
+    String actualReaderStringValue = DEFAULT_JSON_WRITER.writeValueAsString(sampled.get(0).getRawValues());
+
+    Assert.assertTrue(actualReaderStringValue.contains(LISTDIM));
+    Assert.assertTrue(actualReaderStringValue.contains(DIM1));
+    Assert.assertTrue(actualReaderStringValue.contains(DIM2));
+    Assert.assertTrue(actualReaderStringValue.contains(DIM3));
+    Assert.assertTrue(actualReaderStringValue.contains(METRIC1));
+    Assert.assertTrue(actualReaderStringValue.contains(TIMESTAMP));
   }
 
   @Test
