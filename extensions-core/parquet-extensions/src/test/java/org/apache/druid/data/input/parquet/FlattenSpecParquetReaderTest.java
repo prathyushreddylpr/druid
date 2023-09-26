@@ -56,6 +56,7 @@ public class FlattenSpecParquetReaderTest extends BaseParquetReaderTest
   private static final String DIM1 = "\"dim1\" : \"d1v1\"";
   private static final String METRIC1 = "\"metric1\" : 1";
   private static final String TIMESTAMP = "\"timestamp\" : 1537229880023";
+  private static final int FLAT_JSON_LENGTH = 148;
 
   private static final String NESTED_JSON = "{\n"
                                             + "  \"nestedData\" : {\n"
@@ -108,6 +109,7 @@ public class FlattenSpecParquetReaderTest extends BaseParquetReaderTest
     Assert.assertTrue(actualReaderStringValue.contains(DIM3));
     Assert.assertTrue(actualReaderStringValue.contains(METRIC1));
     Assert.assertTrue(actualReaderStringValue.contains(TIMESTAMP));
+    Assert.assertTrue(FLAT_JSON_LENGTH, actualReaderStringValue.length());
   }
 
   @Test
