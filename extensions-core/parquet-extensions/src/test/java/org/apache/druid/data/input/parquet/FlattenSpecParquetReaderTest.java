@@ -19,6 +19,8 @@
 
 package org.apache.druid.data.input.parquet;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import org.apache.druid.data.input.ColumnsFilter;
 import org.apache.druid.data.input.InputEntityReader;
@@ -49,14 +51,6 @@ public class FlattenSpecParquetReaderTest extends BaseParquetReaderTest
                                           + "  \"metric1\" : 1,\n"
                                           + "  \"timestamp\" : 1537229880023\n"
                                           + "}";
-
-  private static final String LISTDIM = "\"listDim\" : [ \"listDim1v1\", \"listDim1v2\" ]";
-  private static final String DIM3 = "\"dim3\" : 1";
-  private static final String DIM2 = "\"dim2\" : \"d2v1\"";
-  private static final String DIM1 = "\"dim1\" : \"d1v1\"";
-  private static final String METRIC1 = "\"metric1\" : 1";
-  private static final String TIMESTAMP = "\"timestamp\" : 1537229880023";
-  private static final int FLAT_JSON_LENGTH = 148;
 
   private static final String NESTED_JSON = "{\n"
                                             + "  \"nestedData\" : {\n"
@@ -101,15 +95,12 @@ public class FlattenSpecParquetReaderTest extends BaseParquetReaderTest
         flattenSpec
     );
     List<InputRowListPlusRawValues> sampled = sampleAllRows(reader);
-    String actualReaderStringValue = DEFAULT_JSON_WRITER.writeValueAsString(sampled.get(0).getRawValues());
+    
+    ObjectMapper obj = new ObjectMapper();
+    JsonNode expectedJson = obj.readTree(FLAT_JSON);
 
-    Assert.assertTrue(actualReaderStringValue.contains(LISTDIM));
-    Assert.assertTrue(actualReaderStringValue.contains(DIM1));
-    Assert.assertTrue(actualReaderStringValue.contains(DIM2));
-    Assert.assertTrue(actualReaderStringValue.contains(DIM3));
-    Assert.assertTrue(actualReaderStringValue.contains(METRIC1));
-    Assert.assertTrue(actualReaderStringValue.contains(TIMESTAMP));
-    Assert.assertTrue(FLAT_JSON_LENGTH, actualReaderStringValue.length());
+    JsonNode sampledAsStringJson = obj.readTree(DEFAULT_JSON_WRITER.writeValueAsString(sampled.get(0).getRawValues()));
+    Assert.assertEquals(expectedJson, sampledAsStringJson);
   }
 
   @Test
